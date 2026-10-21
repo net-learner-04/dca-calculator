@@ -123,14 +123,28 @@ def available_purchase(data: dict, year: int, month: int) -> list:
     token = config.get_access_token()
     investment = investment_amount(data, year, month)
 
+    codes = []
+
+    for i in range(len(portfolio)):
+        codes.append(portfolio[i]["code"])
+
+    price_data = get_current_price(token, codes)
+
+    prices = {}
+
+    for item in price_data["result"]:
+        prices[item["symbol"]] = item["lastPrice"]
+
     results = []
 
     for i in range(len(portfolio)):
         code = portfolio[i]["code"]
-        price_data = get_current_price(token, code)
 
-        # 가장 낮은 매도 호가를 현재 매수 예상 가격으로 사용
-        price = int(price_data["result"]["asks"][0]["price"])
+        if code not in prices:
+            raise ValueError(f"{code}의 시세를 조회할 수 없습니다.")
+
+        # 현재가를 매수 예상 가격으로 사용
+        price = int(float(prices[code]))
 
         if price <= 0:
             raise ValueError(f"{code}의 주가 데이터가 올바르지 않습니다.")
