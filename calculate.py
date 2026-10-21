@@ -88,28 +88,32 @@ def investment_amount(data: dict, year: int, month: int) -> list:
     return results
 
 
-def get_current_price(token: str, code: str) -> dict:
+def get_current_price(token: str, codes: list) -> dict:
     if not token:
         raise ValueError("API 액세스 토큰이 없습니다.")
 
-    if not isinstance(code, str) or not code.strip():
+    if not isinstance(codes, list) or len(codes) == 0:
         raise ValueError("종목 코드가 올바르지 않습니다.")
 
-    url = f"{config.BASE_URL}/v1/stocks/{code}/price"
+    url = f"{config.BASE_URL}/api/v1/prices"
+    params = {"symbols": ",".join(codes)}
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json",
     }
 
     try:
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+
+        if response.status_code != 200:
+            raise RuntimeError(f"시세 조회 요청 실패: {response.status_code} {response.text}")
+
         data = response.json()
 
     except requests.RequestException as e:
         raise RuntimeError(f"시세 조회 요청 실패: {e}") from e
     except ValueError as e:
-        raise RuntimeError("시세 API 응답이 올바른 JSON 형식이 아닙니다.") from e
+        raise RuntimeError("API 응답이 올바른 JSON 형식이 아닙니다.") from e
 
     return data
 
