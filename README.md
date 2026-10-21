@@ -11,7 +11,7 @@
 ## 모듈 설치
 
 ```bash
-python3 -m pip install -r modules.txt
+python3 -m pip install -r requirement.txt
 ```
 
 ## 환경 변수
