@@ -17,7 +17,7 @@ def get_weekly_count(year: int, month: int) -> int:
 def get_daily_count(year: int, month: int) -> int:
     _, total = calendar.monthrange(year, month)
 
-    # 해당 달에 몇 일이 있는지 반환
+    # 해당 달의 평일 (월~금) 수 (count) 를 반환
     return sum(
         1 for day in range(1, total + 1)
         if calendar.weekday(year, month, day) < 5
@@ -88,7 +88,7 @@ def investment_amount(data: dict, year: int, month: int) -> list:
     return results
 
 
-def get_current_price(token, code):
+def get_current_price(token: str, code: str) -> dict:
     if not token:
         raise ValueError("API 액세스 토큰이 없습니다.")
 
@@ -128,7 +128,7 @@ def available_purchase(data: dict, year: int, month: int) -> list:
         # 가장 낮은 매도 호가를 현재 매수 예상 가격으로 사용
         price = int(price_data["result"]["asks"][0]["price"])
 
-        if not isinstance(price, (int, float)) or isinstance(price, bool) or price <= 0:
+        if price <= 0:
             raise ValueError(f"{code}의 주가 데이터가 올바르지 않습니다.")
 
         result = investment[i] // price
