@@ -4,7 +4,8 @@ import calendar, requests, math
 
 def get_weekly_count(year: int, month: int) -> int:
     weeks = calendar.monthcalendar(year, month)
-    target_weekday = calendar.FRIDAY
+    # 일주일 중 계산의 기준이 되는 요일
+    target_weekday = calendar.MONDAY
 
     # 해당 달에 금요일이 몇 번 있는지 반환
     return sum(
